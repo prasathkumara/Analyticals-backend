@@ -17,44 +17,34 @@ const storeData = async (req, res) => {
     });
 
     if (existingUser) {
-      // Update the specific index in the userEvents array based on the date
-      const indexToUpdate = existingUser.userEvents.findIndex(event => event.date === formattedDate);
+      // Update the existing user's data
+      const updatedScreens = {};
+      userData.userEvents.forEach((screenData, index) => {
+        updatedScreens[`userEvents.$.${`screen${index + 1}`}`] = screenData || {};
+      });
 
-      if (indexToUpdate !== -1) {
-        // Merge the existing data with the new data
-        const updatedScreen1 = {
-          ...(existingUser.userEvents[indexToUpdate].screen1 || {}),
-          ...(userData.userEvents[0].screen1 || {})
-        };
-
-        const updatedScreen2 = {
-          ...(existingUser.userEvents[indexToUpdate].screen2 || {}),
-          ...(userData.userEvents[0].screen2 || {})
-        };
-
-        // Update the existing data in MongoDB
-        await db.collection('userEvents').updateOne(
-          {
-            'userInfo.ip': userIp,
-            'userEvents.date': formattedDate
-          },
-          {
-            $set: {
-              [`userEvents.${indexToUpdate}.screen1`]: updatedScreen1,
-              [`userEvents.${indexToUpdate}.screen2`]: updatedScreen2,
-              'userInfo': [userData.userInfo[0]]
-            }
+      await db.collection('userEvents').updateOne(
+        {
+          'userInfo.ip': userIp,
+          'userEvents.date': formattedDate
+        },
+        {
+          $set: {
+            'userInfo': [userData.userInfo[0]],
+            ...updatedScreens
           }
-        );
+        }
+      );
 
-        console.log('Data updated in MongoDB');
-        res.status(200).json({ message: 'Data updated successfully' });
-      } else {
-        console.error('Error: Index not found for the specified date');
-        res.status(500).json({ message: 'Internal Server Error' });
-      }
+      console.log('Data updated in MongoDB');
+      res.status(200).json({ message: 'Data updated successfully' });
     } else {
       // Insert data into MongoDB for a new user on the specified date
+      const screensData = {};
+      userData.userEvents.forEach((screenData, index) => {
+        screensData[`screen${index + 1}`] = screenData || {};
+      });
+
       await db.collection('userEvents').updateOne(
         { 'userInfo.ip': userIp },
         {
@@ -62,8 +52,7 @@ const storeData = async (req, res) => {
           $push: {
             userEvents: {
               date: formattedDate,
-              screen1: userData.userEvents[0].screen1 || {},
-              screen2: userData.userEvents[0].screen2 || {}
+              ...screensData
             }
           }
         },
@@ -77,9 +66,24 @@ const storeData = async (req, res) => {
     console.error('Error inserting/updating data into MongoDB:', err);
     res.status(500).json({ message: 'Internal Server Error' });
   }
+};
+
+const getAllData= async(req, res) => {
+  try {
+    const db = await dbConnection();
+
+    // Retrieve all data from MongoDB using Mongoose
+    const allData = await db.collection('userEvents').find({}).toArray();
+
+    res.status(200).json({data:allData});
+  } catch (err) {
+    console.error('Error retrieving data from MongoDB:', err);
+    res.status(500).send('Internal Server Error');
+  }
 }
 
-module.exports = { storeData };
+module.exports = { storeData, getAllData };
+
 
 
 
