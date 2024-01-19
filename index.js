@@ -20,7 +20,7 @@ dbConnection()
 
   // API endpoint to receive user data and click events
   app.post('/storeData', storeData);
-  app.get('/getUserData', getUserData)
+  app.post('/getUserData', getUserData)
   app.get('/getAllData', getAllData);
     
 

@@ -1,5 +1,4 @@
 const { dbConnection } = require("../server");
-
 const storeData = async (req, res) => {
   try {
     const db = await dbConnection();
@@ -10,54 +9,72 @@ const storeData = async (req, res) => {
     const currentDate = new Date();
     const formattedDate = currentDate.toISOString().slice(0, 10);
 
-    // Check if the user with the given IP address and date already exists
+    // Fetch existing user data based on IP address
     const existingUser = await db.collection('userEvents').findOne({
       'userInfo.ip': userIp,
-      'userEvents.date': formattedDate
     });
 
     if (existingUser) {
-      // Update the existing user's data
-      const updatedScreens = {};
-      userData.userEvents.forEach((screenData, index) => {
-        updatedScreens[`userEvents.$.${`screen${index + 1}`}`] = screenData || {};
-      });
+      // Check if there is data for the current date
+      const existingEventData = existingUser.userEvents.find(event => event.date === formattedDate);
 
-      await db.collection('userEvents').updateOne(
-        {
-          'userInfo.ip': userIp,
-          'userEvents.date': formattedDate
-        },
-        {
-          $set: {
-            'userInfo': [userData.userInfo[0]],
-            ...updatedScreens
-          }
-        }
-      );
+      if (existingEventData) {
+        // Update the existing data for the current date
+        const updatedScreen1 = {
+          ...(existingEventData.screen1 || {}),
+          ...(userData.userEvents[0].screen1 || {})
+        };
 
-      console.log('Data updated in MongoDB');
-      res.status(200).json({ message: 'Data updated successfully' });
-    } else {
-      // Insert data into MongoDB for a new user on the specified date
-      const screensData = {};
-      userData.userEvents.forEach((screenData, index) => {
-        screensData[`screen${index + 1}`] = screenData || {};
-      });
+        const updatedScreen2 = {
+          ...(existingEventData.screen2 || {}),
+          ...(userData.userEvents[0].screen2 || {})
+        };
 
-      await db.collection('userEvents').updateOne(
-        { 'userInfo.ip': userIp },
-        {
-          $set: { 'userInfo': [userData.userInfo[0]] },
-          $push: {
-            userEvents: {
-              date: formattedDate,
-              ...screensData
+        await db.collection('userEvents').updateOne(
+          {
+            'userInfo.ip': userIp,
+            'userEvents.date': formattedDate
+          },
+          {
+            $set: {
+              'userEvents.$.screen1': updatedScreen1,
+              'userEvents.$.screen2': updatedScreen2,
+              'userInfo': [userData.userInfo[0]]
             }
           }
-        },
-        { upsert: true }
-      );
+        );
+
+        console.log('Data updated in MongoDB');
+        res.status(200).json({ message: 'Data updated successfully' });
+      } else {
+        // Insert new data for the current date
+        await db.collection('userEvents').updateOne(
+          { 'userInfo.ip': userIp },
+          {
+            $set: { 'userInfo': [userData.userInfo[0]] },
+            $addToSet: {
+              'userEvents': {
+                date: formattedDate,
+                screen1: userData.userEvents[0].screen1 || {},
+                screen2: userData.userEvents[0].screen2 || {}
+              }
+            }
+          }
+        );
+
+        console.log('Data inserted into MongoDB');
+        res.status(200).json({ message: 'Data stored successfully' });
+      }
+    } else {
+      // Insert data into MongoDB for a new user on the specified date
+      await db.collection('userEvents').insertOne({
+        'userInfo': [userData.userInfo[0]],
+        'userEvents': [{
+          date: formattedDate,
+          screen1: userData.userEvents[0].screen1 || {},
+          screen2: userData.userEvents[0].screen2 || {}
+        }]
+      });
 
       console.log('Data inserted into MongoDB');
       res.status(200).json({ message: 'Data stored successfully' });
