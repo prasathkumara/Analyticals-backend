@@ -92,7 +92,7 @@ const getAllData= async(req, res) => {
     // Retrieve all data from MongoDB using Mongoose
     const allData = await db.collection('userEvents').find({}).toArray();
 
-    res.status(200).json({data:allData});
+    res.status(200).json({allData});
   } catch (err) {
     console.error('Error retrieving data from MongoDB:', err);
     res.status(500).send('Internal Server Error');
