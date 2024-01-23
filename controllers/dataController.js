@@ -1,4 +1,5 @@
 const { dbConnection } = require("../server");
+
 const storeData = async (req, res) => {
   try {
     const db = await dbConnection();
@@ -7,7 +8,13 @@ const storeData = async (req, res) => {
 
     // Get the current date and time
     const currentDate = new Date();
+    //currentDate.setDate(currentDate.getDate() + 2);
     const formattedDate = currentDate.toISOString().slice(0, 10);
+
+     // Get the current day
+     const currentDayNumber = currentDate.getDay();
+     const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+     const currentDay = daysOfWeek[currentDayNumber];
 
     // Fetch existing user data based on IP address
     const existingUser = await db.collection('userEvents').findOne({
@@ -20,15 +27,22 @@ const storeData = async (req, res) => {
 
       if (existingEventData) {
         // Update the existing data for the current date
-        const updatedScreen1 = {
-          ...(existingEventData.screen1 || {}),
-          ...(userData.userEvents[0].screen1 || {})
-        };
-
-        const updatedScreen2 = {
-          ...(existingEventData.screen2 || {}),
-          ...(userData.userEvents[0].screen2 || {})
-        };
+        const updatedUserEvents = existingUser.userEvents.map(event => {
+          if (event.date === formattedDate) {
+            return {
+              date: formattedDate,
+              day:currentDay,
+              ...Object.keys(userData.userEvents[0]).reduce((acc, screen) => {
+                acc[screen] = {
+                  ...(event[screen] || {}),
+                  ...(userData.userEvents[0][screen] || {}),
+                };
+                return acc;
+              }, {}),
+            };
+          }
+          return event;
+        });
 
         await db.collection('userEvents').updateOne(
           {
@@ -37,15 +51,14 @@ const storeData = async (req, res) => {
           },
           {
             $set: {
-              'userEvents.$.screen1': updatedScreen1,
-              'userEvents.$.screen2': updatedScreen2,
-              'userInfo': [userData.userInfo[0]]
+              'userEvents': updatedUserEvents,
+              'userInfo': [userData.userInfo[0]],
             }
           }
         );
 
         console.log('Data updated in MongoDB');
-        res.status(200).json({ message: 'Data updated successfully',data:userData });
+        res.status(200).json({ message: 'Data updated successfully', data: userData });
       } else {
         // Insert new data for the current date
         await db.collection('userEvents').updateOne(
@@ -55,15 +68,18 @@ const storeData = async (req, res) => {
             $addToSet: {
               'userEvents': {
                 date: formattedDate,
-                screen1: userData.userEvents[0].screen1 || {},
-                screen2: userData.userEvents[0].screen2 || {}
+                day:currentDay,
+                ...Object.keys(userData.userEvents[0]).reduce((acc, screen) => {
+                  acc[screen] = userData.userEvents[0][screen] || {};
+                  return acc;
+                }, {}),
               }
             }
           }
         );
 
         console.log('Data inserted into MongoDB');
-        res.status(200).json({ message: 'Data stored successfully', data:userData});
+        res.status(200).json({ message: 'Data stored successfully', data: userData });
       }
     } else {
       // Insert data into MongoDB for a new user on the specified date
@@ -71,8 +87,11 @@ const storeData = async (req, res) => {
         'userInfo': [userData.userInfo[0]],
         'userEvents': [{
           date: formattedDate,
-          screen1: userData.userEvents[0].screen1 || {},
-          screen2: userData.userEvents[0].screen2 || {}
+          day:currentDay,
+          ...Object.keys(userData.userEvents[0]).reduce((acc, screen) => {
+            acc[screen] = userData.userEvents[0][screen] || {};
+            return acc;
+          }, {}),
         }]
       });
 
@@ -84,6 +103,7 @@ const storeData = async (req, res) => {
     res.status(500).json({ message: 'Internal Server Error' });
   }
 };
+
 
 const getAllData= async(req, res) => {
   try {
