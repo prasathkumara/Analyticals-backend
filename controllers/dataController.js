@@ -9,7 +9,7 @@ const storeData = async (req, res) => {
     // Get the current date and time
     const currentDate = new Date();
     //currentDate.setDate(currentDate.getDate() + 2);
-    const formattedDate = currentDate.toISOString().slice(0, 10);
+    const formattedDate = currentDate.toISOString().slice(0, 10); 
 
      // Get the current day
      const currentDayNumber = currentDate.getDay();
@@ -30,8 +30,6 @@ const storeData = async (req, res) => {
         const updatedUserEvents = existingUser.userEvents.map(event => {
           if (event.date === formattedDate) {
             return {
-              date: formattedDate,
-              day:currentDay,
               ...Object.keys(userData.userEvents[0]).reduce((acc, screen) => {
                 acc[screen] = {
                   ...(event[screen] || {}),
@@ -67,8 +65,6 @@ const storeData = async (req, res) => {
             $set: { 'userInfo': [userData.userInfo[0]] },
             $addToSet: {
               'userEvents': {
-                date: formattedDate,
-                day:currentDay,
                 ...Object.keys(userData.userEvents[0]).reduce((acc, screen) => {
                   acc[screen] = userData.userEvents[0][screen] || {};
                   return acc;
@@ -86,8 +82,6 @@ const storeData = async (req, res) => {
       await db.collection('userEvents').insertOne({
         'userInfo': [userData.userInfo[0]],
         'userEvents': [{
-          date: formattedDate,
-          day:currentDay,
           ...Object.keys(userData.userEvents[0]).reduce((acc, screen) => {
             acc[screen] = userData.userEvents[0][screen] || {};
             return acc;
