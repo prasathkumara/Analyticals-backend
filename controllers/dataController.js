@@ -8,7 +8,7 @@ const storeData = async (req, res) => {
 
     // Get the current date and time
     const currentDate = new Date();
-    currentDate.setDate(currentDate.getDate() + 4);
+    //currentDate.setDate(currentDate.getDate() + 4);
    
     const formattedDate = currentDate.toISOString().slice(0, 10);
  console.log(formattedDate)
