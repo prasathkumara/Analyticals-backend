@@ -8,7 +8,7 @@ const storeData = async (req, res) => {
 
     // Get the current date and time
     const currentDate = new Date();
-    //currentDate.setDate(currentDate.getDate() + 4);
+    //currentDate.setDate(currentDate.getDate() -1 );
    
     const formattedDate = currentDate.toISOString().slice(0, 10);
  console.log(formattedDate)
@@ -18,51 +18,19 @@ const storeData = async (req, res) => {
     });
 
     if (existingUser) {
-      // Check if there is data for the current date
-      const existingEventData = existingUser.userEvents.find(event => event.date === formattedDate);
-
-      if (existingEventData) {
-        // Update the existing data for the current date
-        const updatedScreen = {
-          ...(existingEventData || {}),
-          ...(userData.userEvents[0] || {})
-        };
-
-
-        await db.collection('userEvents').updateOne(
-          {
-            'userInfo.ip': userIp,
-            'userEvents.date': formattedDate
+      // Update existing user data
+      await db.collection('userEvents').updateOne(
+        { 'userInfo.ip': userIp },
+        {
+          $set: {
+            'userInfo': [userData.userInfo[0]],
+            'userEvents': userData.userEvents
           },
-          {
-            $set: {
-              'userEvents.$': updatedScreen,
-              'userInfo': [userData.userInfo[0]]
-            }
-          }
-        );
 
-        console.log('Data updated in MongoDB');
-        res.status(200).json({ message: 'Data updated successfully',data:userData });
-      } else {
-        // Insert new data for the current date
-        await db.collection('userEvents').updateOne(
-          { 'userInfo.ip': userIp },
-          {
-            $set: { 'userInfo': [userData.userInfo[0]] },
-            $addToSet: {
-              'userEvents': {
-                date: formattedDate,
-                ...userData.userEvents[0]|| {},
-                
-              }
-            }
-          }
-        );
-
-        console.log('Data inserted into MongoDB');
-        res.status(200).json({ message: 'Data stored successfully', data:userData});
-      }
+        }
+      );
+      console.log('Data updated into MongoDB');
+      res.status(200).json({ message: 'Data updated successfully', data:userData});
     } else {
       // Insert data into MongoDB for a new user on the specified date
       await db.collection('userEvents').insertOne({
@@ -75,7 +43,7 @@ const storeData = async (req, res) => {
       });
 
       console.log('Data inserted into MongoDB');
-      res.status(200).json({ message: 'Data stored successfully' });
+      res.status(200).json({ message: 'Data stored successfully'});
     }
   } catch (err) {
     console.error('Error inserting/updating data into MongoDB:', err);
