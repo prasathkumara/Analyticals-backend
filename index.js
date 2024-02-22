@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const { dbConnection } = require('./server');
 const cors = require('cors');
 const { storeData, getAllData} = require('./controllers/dataController');
-const { getUserData, anonymousUser } = require('./controllers/userController');
+const { getUserData } = require('./controllers/userController');
 //const { config } = require('./controllers/configController');
 const { updateData, user } = require('./controllers/updateController');
 
@@ -21,7 +21,7 @@ app.post('/storeData', storeData);
 app.get('/getUserData/:ip', getUserData)
 app.get('/getAllData', getAllData);
 //app.post('/getConfig',config)
-app.post('/generateUniqueIdentifier',anonymousUser)
+//app.post('/generateUniqueIdentifier',anonymousUser)
 
 //new development
 app.put('/updateUserEvents/:userId', updateData)  
