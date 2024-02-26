@@ -24,7 +24,7 @@ app.get('/getAllData', getAllData);
 //app.post('/generateUniqueIdentifier',anonymousUser)
 
 //new development
-app.put('/updateUserEvents/:userId', updateData)  
+app.post('/updateUserEvents/:userId', updateData)  
 app.post('/config', user)  
 
 //Starting the server

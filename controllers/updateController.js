@@ -3,106 +3,123 @@ const mongoose = require('mongoose');
 const User = require('../models/userModel')
 
 
+// updateController.js
+
 const updateData = async (req, res) => {
-    const userId = req.params.userId;
+  const userId = req.params.userId;
 
-    try {
-        // Find the user by ID
-        const user = await User.findById(userId);
-        console.log("User---->", user)
+  try {
+    // Find the user by ID
+    const user = await User.findById(userId);
 
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
-        }
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
 
-        const clientPayload = req.body;
-        console.log('payload',clientPayload);
+    const clientPayload = req.body;
 
-        // Update userEvents based on the client payload
-        clientPayload.forEach(clientEvent => {
-            const existingEvent = user.userEvents.find(existingEvent => existingEvent.date === clientEvent.date);
-            //console.log('1.index', existingEventIndex);
-            if (existingEvent) {
-                // Update existing user event
-               
-                
-                console.log('2.existingevent---', existingEvent);
+    // Iterate through the payload
+    clientPayload.forEach(clientEvent => {
+      // Find the existing event with the same date
+      const existingEvent = user.userEvents.find(existingEvent => existingEvent.date === clientEvent.date);
 
-                const screenKey = Object.keys(clientEvent)[1]; // Assuming screen1 is always at index 1
-                console.log("3.screenKey", screenKey);
-
-                if (!existingEvent[screenKey]) {
-                    existingEvent[screenKey] = {};
-                }
-
-                const existingScreen = existingEvent[screenKey];
-                console.log("4.existingScreen--->", existingScreen);
-                Object.entries(clientEvent[screenKey]).forEach(([key, value]) => {
-                    if (existingScreen[key]) {
-                        console.log("5.Existingkey-->", existingScreen[key]);
-                        console.log("6.value", value);
-                        existingScreen[key] += value;
-                        console.log("7. Updated Existingkey-->", existingScreen[key]);
-
-                    } else {
-                        existingScreen[key] = value;
-                        console.log("9");
-                    }
-                });
-
-                // Calculate totalCount by summing counts of all keys within the screen
-                existingEvent.totalCount = Object.values(existingScreen).reduce((sum, value) => sum + value, 0);
-                console.log('10. total count -->', existingEvent.totalCount)
-              
-            } else {
-                // Add new user event
-                user.userEvents.push({
-                    date: clientEvent.date,
-                    [Object.keys(clientEvent)[1]]: clientEvent[Object.keys(clientEvent)[1]],
-                    // Calculate totalCount by summing counts of all keys within the screen
-                    totalCount: Object.values(clientEvent[Object.keys(clientEvent)[1]]).reduce((sum, value) => sum + value, 0)
-                });
+      if (existingEvent) {
+        // Update existing user event
+        Object.keys(clientEvent).forEach(screenKey => {
+          if (screenKey !== 'date') {
+            if (!existingEvent.screens) {
+              existingEvent.screens = {};
             }
+
+            if (!existingEvent.screens[screenKey]) {
+              existingEvent.screens[screenKey] = {};
+            }
+
+            Object.entries(clientEvent[screenKey]).forEach(([key, value]) => {
+              if (existingEvent.screens[screenKey][key]) {
+                existingEvent.screens[screenKey][key] += value;
+              } else {
+                existingEvent.screens[screenKey][key] = value;
+              }
+            });
+          }
+        });
+      } else {
+        // Add new user event
+        const newUserEvent = {
+          date: clientEvent.date,
+          screens: {},
+        };
+
+        Object.keys(clientEvent).forEach(screenKey => {
+          if (screenKey !== 'date') {
+            newUserEvent.screens[screenKey] = { ...clientEvent[screenKey] };
+          }
         });
 
-        user.markModified('userEvents');
+        user.userEvents.push(newUserEvent);
+      }
+    });
 
-        try {
-            await user.save();
-            console.log('User saved successfully');
-        } catch (error) {
-            console.error('Error saving user:', error);
+      // Calculate total count for each date and update 'totalCount' field
+      user.userEvents.forEach(userEvent => {
+        let totalCount = 0;
+        if (userEvent.screens) {
+          Object.keys(userEvent.screens).forEach(screenKey => {
+            Object.values(userEvent.screens[screenKey]).forEach(value => {
+              totalCount += value;
+            });
+          });
         }
+        userEvent.totalCount = totalCount;
+      });
 
-        res.json({ message: 'User events updated successfully', user });
+    // Mark the 'userEvents' field as modified
+    user.markModified('userEvents');
+
+    try {
+      // Save the updated user object
+      await user.save();
+      console.log('User saved successfully');
     } catch (error) {
-        console.error(error);
+      console.error('Error saving user:', error);
+    }
+
+    res.json({ message: 'User events updated successfully', user });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
+
+
+const user = async (req, res) => {
+    const userData = req.body;
+    const configData = {
+        endpoint: 'https://webanalyticals.onrender.com',
+        serverUpdateTime: 5000,
+        token: '',
+    };
+
+    try {
+        const response = {
+            ...configData,
+            _id: undefined, // To exclude _id from the response initially
+        };
+
+        const newUser = new User({ ...userData, ...configData });
+        const savedUser = await newUser.save();
+
+        // Update the response with the generated _id
+        response._id = savedUser._id;
+
+        res.json(response);
+    } catch (error) {
+        console.error('Error creating config:', error);
         res.status(500).json({ message: 'Internal Server Error' });
     }
 };
 
-
-const user = async (req, res) => {
-        const userData = req.body;
-        const configData = {
-            endpoint: 'https://webanalyticals.onrender.com',
-            serverUpdateTime: 5000,
-            token: '',
-        };
-        try {
-          
-            const response = {
-                ...userData,
-                ...configData,
-              };
-
-              const newUser = new User(response);
-              const  savedUser =  await newUser.save();
-              res.json( savedUser );
-        } catch (error) {
-            console.error('Error craeting config:', error);
-            res.status(500).json({ message: 'Internal Server Error' });
-        }
-};
 
 module.exports = {updateData, user}
