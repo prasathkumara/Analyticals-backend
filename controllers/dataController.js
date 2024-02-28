@@ -67,7 +67,67 @@ const getAllData= async(req, res) => {
   }
 }
 
-module.exports = { storeData, getAllData };
+ 
+  const mostVisitedPage = async (req, res) => {
+    try {
+      const db = await dbConnection();
+
+  const allData = await db.collection('userEvents').find({}).toArray();
+
+  
+  const getMostClickedScreen = (data) => {
+    const screenCounts = {};
+  
+    // Iterate through the data to calculate counts for each screen
+    data.forEach(item => {
+      if (item.userEvents) {
+        item.userEvents.forEach(event => {
+          // Check if the screens object is directly inside userEvents
+          const screens = event.screens || event;
+  
+          Object.entries(screens).forEach(([screen, counts]) => {
+            if (!screenCounts[screen]) {
+              screenCounts[screen] = 0;
+            }
+            if (typeof counts === 'object') {
+              Object.values(counts).forEach(count => {
+                screenCounts[screen] += count;
+              });
+            } else if (typeof counts === 'number') {
+              screenCounts[screen] += counts;
+            }
+          });
+        });
+      }
+    });
+  
+    // Exclude "date" and "totalCount" from the result
+    delete screenCounts['date'];
+    delete screenCounts['totalCount'];
+  
+    // Sort the screens based on counts in descending order
+    const sortedScreens = Object.keys(screenCounts).sort((a, b) => screenCounts[b] - screenCounts[a]);
+  
+    return {
+      mostViewedPages: sortedScreens.map(screen => ({ pageName: screen, count: screenCounts[screen] })),
+    };
+  };
+  
+  
+  
+      const result = getMostClickedScreen(allData);
+  
+     console.log('result',result)
+      res.json(result);
+    } catch (error) {
+      console.error('Error processing most viewed page data:', error);
+      res.status(500).json({ message: 'Internal Server Error' });
+    }
+  };
+  
+
+
+module.exports = { storeData, getAllData, mostVisitedPage };
 
 
 

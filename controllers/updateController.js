@@ -1,15 +1,11 @@
-
 const mongoose = require('mongoose');
 const User = require('../models/userModel')
 
-
-// updateController.js
-
+//update user events endpoint: '/updateUserEvents/:userId'
 const updateData = async (req, res) => {
   const userId = req.params.userId;
 
   try {
-    // Find the user by ID
     const user = await User.findById(userId);
 
     if (!user) {
@@ -18,7 +14,6 @@ const updateData = async (req, res) => {
 
     const clientPayload = req.body;
 
-    // Iterate through the payload
     clientPayload.forEach(clientEvent => {
       // Find the existing event with the same date
       const existingEvent = user.userEvents.find(existingEvent => existingEvent.date === clientEvent.date);
@@ -61,7 +56,7 @@ const updateData = async (req, res) => {
       }
     });
 
-      // Calculate total count for each date and update 'totalCount' field
+      // Calculate total count for each date and update 'totalCount'
       user.userEvents.forEach(userEvent => {
         let totalCount = 0;
         if (userEvent.screens) {
@@ -80,12 +75,12 @@ const updateData = async (req, res) => {
     try {
       // Save the updated user object
       await user.save();
-      console.log('User saved successfully');
+      //console.log('User saved successfully');
     } catch (error) {
       console.error('Error saving user:', error);
     }
 
-    res.json({ message: 'User events updated successfully', user });
+    res.json({ message: 'User events updated successfully'});
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Internal Server Error' });
@@ -93,7 +88,7 @@ const updateData = async (req, res) => {
 };
 
 
-
+//new user with config, endpoint :'/config'
 const user = async (req, res) => {
     const userData = req.body;
     const configData = {
@@ -122,4 +117,16 @@ const user = async (req, res) => {
 };
 
 
-module.exports = {updateData, user}
+//get all user data, endpoint : '/getUsersData'
+const getUsersData= async(req, res) => {
+  try {
+    const users = await User.find();
+
+    res.status(200).json(users);
+  } catch (err) {
+    console.error('Error retrieving data from MongoDB:', err);
+    res.status(500).send('Internal Server Error');
+  }
+}
+
+module.exports = {updateData, user, getUsersData}
