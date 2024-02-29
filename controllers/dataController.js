@@ -127,8 +127,59 @@ const getAllData= async(req, res) => {
   
 
 
-module.exports = { storeData, getAllData, mostVisitedPage };
+const mostClickedAction = async(req, res) =>{
 
+  try {
 
+    const db = await dbConnection();
 
+    const allData = await db.collection('userEvents').find({}).toArray();
+   console.log(allData)
+   const getTotalClickedCounts = (data) => {
+    const buttonCounts = {};
+  
+    // Iterate through the data to calculate counts for each button
+    data.forEach(item => {
+      if (item.userEvents) {
+        item.userEvents.forEach(event => {
+          if (event) {
+            Object.entries(event).forEach(([screen, buttons]) => {
+              Object.entries(buttons).forEach(([button, count]) => {
+                // Filter out entries with non-alphabetic button names or names that are too short
+                if (typeof button === 'string' && button.length > 1) {
+                  if (!buttonCounts[button]) {
+                    buttonCounts[button] = 0;
+                  }
+                  buttonCounts[button] += parseInt(count, 10) || 0;
+                }
+              });
+            });
+          }
+        });
+      }
+    });
+  
+    // Sort the buttons based on counts in descending order
+    const sortedButtons = Object.keys(buttonCounts).sort((a, b) => buttonCounts[b] - buttonCounts[a]);
+  
+    // Create the result object
+    const mostClickedButtons = sortedButtons.map(button => ({ ButtonName: button, count: buttonCounts[button] }));
+  
+    return { mostClickedButtons };
+  };
+  
+    // Call the function to get the total clicked counts for each button
+    const result = getTotalClickedCounts(allData);
+    console.log(result);
+    res.json(result);
+  } catch (error) {
+    console.error('Error processing most viewed page data:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+
+  
+    
+  }
+
+module.exports = { storeData, getAllData, mostVisitedPage , mostClickedAction };
 

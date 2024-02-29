@@ -2,7 +2,7 @@ const express = require('express')
 const bodyParser = require('body-parser');
 const { dbConnection } = require('./server');
 const cors = require('cors');
-const { storeData, getAllData, mostVisitedPage} = require('./controllers/dataController');
+const { storeData, getAllData, mostVisitedPage, mostClickedAction} = require('./controllers/dataController');
 const { getUserData } = require('./controllers/userController');
 //const { config } = require('./controllers/configController');
 const { updateData, user, getUsersData } = require('./controllers/updateController');
@@ -22,9 +22,10 @@ dbConnection()
 app.post('/storeData', storeData);
 app.get('/getUserData/:ip', getUserData) 
 app.get('/getAllData', getAllData);
+
+//admin page charts data collection api
 app.get('/mostVisitedPage', mostVisitedPage)
-//app.post('/getConfig',config)
-//app.post('/generateUniqueIdentifier',anonymousUser)
+app.get('/mostClicked', mostClickedAction)
 
 //new development api
 app.post('/config', user) 

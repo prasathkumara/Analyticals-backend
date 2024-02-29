@@ -103,7 +103,7 @@ const user = async (req, res) => {
             _id: undefined, // To exclude _id from the response initially
         };
 
-        const newUser = new User({ ...userData, ...configData });
+        const newUser = new User({ ...userData });
         const savedUser = await newUser.save();
 
         // Update the response with the generated _id

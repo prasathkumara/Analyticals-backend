@@ -47,27 +47,27 @@ const mostViewedPage = async (req, res) => {
     // Function to calculate the most clicked screen
     const getMostClickedScreen = (data) => {
       const screenCounts = {};
-      console.log("1.data",data)
+      
       // Iterate through the data to calculate counts for each screen
       data.forEach(item => {
-        console.log('2.item', item)
+        
         if (item.userEvents) {
-          console.log("3.user events",item.userEvents)
+          
           item.userEvents.forEach(event => {
-            console.log("4.event",event)
+          
             if (event.screens) {
 
-              console.log('5.event screens',event.screens)
+              
               Object.entries(event.screens).forEach(([screen, counts]) => {
-                console.log("6.",event.screens[screen])
+                
                 if (!screenCounts[screen]) {
-                  console.log("7.",event.screens[screen])
-                  console.log("7c.",event.screens[counts])
+                  
+                 
                   screenCounts[screen] = 0;
                 }
                 Object.values(counts).forEach(count => {
-                  console.log("8.",event.screens[screen])
-                  console.log("8c.",event.screens[counts])
+                  
+                  
                   screenCounts[screen] += count;
                 });
               });
