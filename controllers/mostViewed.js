@@ -95,7 +95,7 @@ const mostViewedPage = async (req, res) => {
       await mostViewedPage.save();
     }
 
-    res.json(result);
+    res.json(result.mostViewedPages);
   } catch (error) {
     console.error('Error processing most viewed page data:', error);
     res.status(500).json({ message: 'Internal Server Error' });

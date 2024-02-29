@@ -118,7 +118,7 @@ const getAllData= async(req, res) => {
       const result = getMostClickedScreen(allData);
   
      console.log('result',result)
-      res.json(result);
+      res.json(result.mostViewedPages);
     } catch (error) {
       console.error('Error processing most viewed page data:', error);
       res.status(500).json({ message: 'Internal Server Error' });
@@ -171,7 +171,7 @@ const mostClickedAction = async(req, res) =>{
     // Call the function to get the total clicked counts for each button
     const result = getTotalClickedCounts(allData);
     console.log(result);
-    res.json(result);
+    res.json(result.mostClickedButtons);
   } catch (error) {
     console.error('Error processing most viewed page data:', error);
     res.status(500).json({ message: 'Internal Server Error' });
