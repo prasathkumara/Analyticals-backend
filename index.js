@@ -8,6 +8,9 @@ const { getUserData } = require('./controllers/userController');
 const { updateData, user, getUsersData } = require('./controllers/updateController');
 const { screenCount, mostViewedPage } = require('./controllers/mostViewed');
 const { mostClickedActions } = require('./controllers/mostClicked');
+const { mapData, getAllMapData } = require('./controllers/mapDataController');
+const { saveDeviceData, getAllUserDeviceData } = require('./controllers/deviceDataController');
+const { clientData, getUsersByClientName } = require('./controllers/dashboardController');
 
 const app = express();
 const port = 3000;
@@ -37,6 +40,16 @@ app.get('/getUsersData', getUsersData)
 app.get('/screenCount', screenCount)
 app.get('/mostViewedPage', mostViewedPage)
 app.get('/mostClickedActions', mostClickedActions)
+
+//new development
+app.post('/mapdata',mapData)
+app.get('/allMapData', getAllMapData)
+
+app.post('/saveDeviceData',saveDeviceData)
+app.get('/getAllUserDeviceData', getAllUserDeviceData)
+ 
+app.get('/getAllClients',clientData),
+app.get('/getUsersByClientName/:clientName', getUsersByClientName)
 
 //Starting the server
 app.listen(port, () => {
