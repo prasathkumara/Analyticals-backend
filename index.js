@@ -42,11 +42,11 @@ app.get('/mostViewedPage', mostViewedPage)
 app.get('/mostClickedActions', mostClickedActions)
 
 //new development
-app.post('/mapdata',mapData)
-app.get('/allMapData', getAllMapData)
+app.post('/saveMapData',mapData)
+app.get('/getAllMapData', getAllMapData)
 
 app.post('/saveDeviceData',saveDeviceData)
-app.get('/getAllUserDeviceData', getAllUserDeviceData)
+app.get('/getAllDeviceData', getAllUserDeviceData)
  
 app.get('/getAllClients',clientData),
 app.get('/getUsersByClientName/:clientName', getUsersByClientName)
