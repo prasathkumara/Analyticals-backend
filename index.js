@@ -11,6 +11,7 @@ const { mostClickedActions } = require('./controllers/mostClicked');
 const { mapData, getAllMapData } = require('./controllers/mapDataController');
 const { saveDeviceData, getAllUserDeviceData } = require('./controllers/deviceDataController');
 const { clientData, getUsersByClientName } = require('./controllers/dashboardController');
+const { getUserEvents, dateFilter } = require('./controllers/dateController');
 
 const app = express();
 const port = 3000;
@@ -47,9 +48,13 @@ app.get('/getAllMapData', getAllMapData)
 
 app.post('/saveDeviceData',saveDeviceData)
 app.get('/getAllDeviceData', getAllUserDeviceData)
- 
+  
 app.get('/getAllClients',clientData),
 app.get('/getUsersByClientName/:clientName', getUsersByClientName)
+
+//date  
+app.get('/getDates/:userId', dateFilter)
+app.get('/getUserEvents/:userId/:date', getUserEvents)
 
 //Starting the server
 app.listen(port, () => {
