@@ -27,7 +27,7 @@ app.post('/storeData', storeData);
 app.get('/getUserData/:ip', getUserData) 
 app.get('/getAllData', getAllData);
 
-//admin page charts data collection api
+//admin page charts data collection api old json structure
 app.get('/mostVisitedPage', mostVisitedPage)
 app.get('/mostClicked', mostClickedAction)
 
@@ -49,7 +49,7 @@ app.get('/getAllMapData', getAllMapData)
 app.post('/saveDeviceData',saveDeviceData)
 app.get('/getAllDeviceData', getAllUserDeviceData)
   
-app.get('/getAllClients',clientData),
+app.get('/getAllClients',clientData);
 app.get('/getUsersByClientName/:clientName', getUsersByClientName)
 
 //date  
