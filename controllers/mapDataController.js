@@ -1,9 +1,9 @@
 const MapData = require("../models/mapData")
 
 const mapData = async(req,res) =>{
-    const { _id, clientName, latitude, longitude, country } = req.body; 
+    const { _id, clientName, latitude, longitude, country, cityName } = req.body; 
     try {
-        const newMapData = new MapData({ _id, clientName, latitude, longitude, country });
+        const newMapData = new MapData({ _id, clientName, latitude, longitude, country, cityName });
         const savedData = await newMapData.save();
         res.status(200).json({message:"map Data added successfully", savedData})
     } catch (error) {

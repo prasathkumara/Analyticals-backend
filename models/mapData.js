@@ -6,7 +6,8 @@ const mapdataSchema = new mongoose.Schema(
         clientName : String,
         latitude : String,
         longitude : String,
-        country :String
+        country : String,
+        cityName: String
 },{ _id: false})
 
 const MapData = mongoose.model("mapData",mapdataSchema);
