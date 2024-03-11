@@ -6,6 +6,10 @@ const mostClickedActions = async (req, res) => {
     try {
       const client = req.params.clientName
       const users = await User.find({'userInfo.clientName': client});
+
+      if(users.length === 0){
+        return res.json({ message: `No data found for the client name: ${client}.` });
+    }
       // Check if there is an existing document in the "mostviewedpage" collection
       //const existingMostViewedPage = await MostClickedActions.findOne();
   
