@@ -8,16 +8,9 @@ const userEventSchema = new mongoose.Schema({
 }, { strict: false, _id: false });
 
 const userInfoSchema = new mongoose.Schema({
-    ip: String,
     browserName: String,
     clientName: String,
-    userType : String,
-    dates: String,
-    time: String,
-    lat : String,
-    lan : String,
-    country : String,
-    device : String
+    userType : String
 }, { _id: false, strict: false});
 
 const userSchema = new mongoose.Schema({
