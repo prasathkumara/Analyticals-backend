@@ -4,9 +4,10 @@ const User = require("../models/userModel");
 
 const mostClickedActions = async (req, res) => {
     try {
-      const users = await User.find();
+      const client = req.params.clientName
+      const users = await User.find({'userInfo.clientName': client});
       // Check if there is an existing document in the "mostviewedpage" collection
-      const existingMostViewedPage = await MostClickedActions.findOne();
+      //const existingMostViewedPage = await MostClickedActions.findOne();
   
       // Function to calculate the most clicked screen
       const getMostClickedButtons = (data) => {
@@ -41,15 +42,15 @@ const mostClickedActions = async (req, res) => {
       
       // Call the function to get the most clicked buttons
       const result = getMostClickedButtons(users);
-      console.log(result);
+      //console.log(result);
       
       // If there is an existing document, update it; otherwise, create a new one
-      if (existingMostViewedPage) {
-        await MostClickedActions.updateOne({}, result);
-      } else {
-        const mostViewedPage = new MostClickedActions(result);
-        await mostViewedPage.save();
-      }
+      // if (existingMostViewedPage) {
+      //   await MostClickedActions.updateOne({}, result);
+      // } else {
+      //   const mostViewedPage = new MostClickedActions(result);
+      //   await mostViewedPage.save();
+      // }
   
       res.json(result.mostClickedButtons);
     } catch (error) {

@@ -26,7 +26,11 @@ const saveDeviceData = async (req, res) => {
 
 const getAllUserDeviceData = async (req, res) => {
     try {
-        const allUserDeviceData = await DeviceData.find();
+        const client = req.params.clientName
+        const allUserDeviceData = await DeviceData.find({'clientName': client});
+        if(allUserDeviceData.length === 0){
+            return res.json({ message: `No data found for the client name: ${client}.` });
+        }
         res.status(200).json( allUserDeviceData );
     } catch (error) {
         console.error('Error fetching user device data:', error);

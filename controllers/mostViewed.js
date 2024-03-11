@@ -40,9 +40,12 @@ async function processAndStoreData(dataArray) {
 
 const mostViewedPage = async (req, res) => {
   try {
-    const users = await User.find();
+    const client = req.params.clientName
+    const users = await User.find({ 'userInfo.clientName': client });
+    
+    //console.log('users---.',users)
     // Check if there is an existing document in the "mostviewedpage" collection
-    const existingMostViewedPage = await MostViewedPage.findOne();
+    //const existingMostViewedPage = await MostViewedPage.findOne();
 
     // Function to calculate the most clicked screen
     const getMostClickedScreen = (data) => {
@@ -75,7 +78,7 @@ const mostViewedPage = async (req, res) => {
           });
         }
       });
-      console.log('result',screenCounts)
+      //console.log('result',screenCounts)
       // Sort the screens based on counts in descending order
       const sortedScreens = Object.keys(screenCounts).sort((a, b) => screenCounts[b] - screenCounts[a]);
 
@@ -88,12 +91,10 @@ const mostViewedPage = async (req, res) => {
     const result = getMostClickedScreen(users);
 
     // If there is an existing document, update it; otherwise, create a new one
-    if (existingMostViewedPage) {
-      await MostViewedPage.updateOne({}, result);
-    } else {
-      const mostViewedPage = new MostViewedPage(result);
-      await mostViewedPage.save();
-    }
+    
+      // const mostViewedPage = new MostViewedPage(result);
+      // await mostViewedPage.save();
+    
 
     res.json(result.mostViewedPages);
   } catch (error) {

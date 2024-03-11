@@ -15,11 +15,16 @@ const mapData = async(req,res) =>{
 
 const getAllMapData = async(req,res) =>{
     try {
-        const data  = await MapData.find();
-        res.status(200).json(data)
+        const client = req.params.clientName
+        const allUserMapData  = await MapData.find({'clientName': client});
+        if(allUserMapData.length === 0){
+            return res.json({ message: `No data found for the client name: ${client}.` });
+        }
+       
+       return res.status(200).json(allUserMapData)
     } catch (error) {
         console.error('Error creating mapdata:', error);
-        res.status(500).json({ message: 'Internal Server Error' });
+       return res.status(500).json({ message: 'Internal Server Error' });
     }
 }
 

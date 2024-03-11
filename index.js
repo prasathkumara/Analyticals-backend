@@ -39,15 +39,15 @@ app.get('/getUsersData', getUsersData)
 
 //admin page charts data collection api
 app.get('/screenCount', screenCount)
-app.get('/mostViewedPage', mostViewedPage)
-app.get('/mostClickedActions', mostClickedActions)
+app.get('/mostViewedPages/:clientName', mostViewedPage)
+app.get('/mostClickedActions/:clientName', mostClickedActions)
 
 //new development
 app.post('/saveMapData',mapData)
-app.get('/getAllMapData', getAllMapData)
+app.get('/getAllMapData/:clientName', getAllMapData)
 
 app.post('/saveDeviceData',saveDeviceData)
-app.get('/getAllDeviceData', getAllUserDeviceData)
+app.get('/getAllDeviceData/:clientName', getAllUserDeviceData)
   
 app.get('/getAllClients',clientData);
 app.get('/getUsersByClientName/:clientName', getUsersByClientName)
