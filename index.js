@@ -11,7 +11,7 @@ const { mostClickedActions } = require('./controllers/mostClicked');
 const { mapData, getAllMapData } = require('./controllers/mapDataController');
 const { saveDeviceData, getAllUserDeviceData } = require('./controllers/deviceDataController');
 const { clientData, getUsersByClientName } = require('./controllers/dashboardController');
-const { getUserEvents, dateFilter } = require('./controllers/dateController');
+const { getUserEvents, dateFilter, getweeklyData, getmonthlyData } = require('./controllers/dateController');
 
 const app = express();
 const port = 3000;
@@ -55,6 +55,8 @@ app.get('/getUsersByClientName/:clientName', getUsersByClientName)
 //date  
 app.get('/getDates/:userId', dateFilter)
 app.get('/getUserEvents/:userId/:date', getUserEvents)
+app.get('/getWeeklyData/:userId', getweeklyData)
+app.get('/getmonthlyData/:userId', getmonthlyData)
 
 //Starting the server
 app.listen(port, () => {
