@@ -56,7 +56,7 @@ app.get('/getUsersByClientName/:clientName', getUsersByClientName)
 app.get('/getDates/:userId', dateFilter)
 app.get('/getUserEvents/:userId/:date', getUserEvents)
 app.get('/getWeeklyData/:userId', getweeklyData)
-app.get('/getmonthlyData/:userId', getmonthlyData)
+app.get('/getMonthlyData/:userId', getmonthlyData)
 
 //Starting the server
 app.listen(port, () => {
