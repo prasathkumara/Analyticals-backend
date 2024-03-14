@@ -20,6 +20,7 @@ const port = 3000;
 app.use(bodyParser.json());
 app.use(cors()); 
 
+//Database connection
 dbConnection()
 
 // API endpoint to receive user data and click events

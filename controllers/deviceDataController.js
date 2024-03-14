@@ -16,7 +16,7 @@ const saveDeviceData = async (req, res) => {
 
         const newDeviceData = new DeviceData({ _id, clientName, DeviceName });
         const savedData = await newDeviceData.save();
-        res.status(200).json({ message: "Device Data added successfully", savedData });
+        res.status(200).json({ message: "Device Data added successfully"});
     } catch (error) {
         console.error('Error creating device data:', error);
         res.status(500).json({ message: 'Internal Server Error' });

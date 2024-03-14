@@ -5,7 +5,7 @@ const mapData = async(req,res) =>{
     try {
         const newMapData = new MapData({ _id, clientName, latitude, longitude, country, cityName });
         const savedData = await newMapData.save();
-        res.status(200).json({message:"map Data added successfully", savedData})
+        res.status(200).json({message:"map Data added successfully"})
     } catch (error) {
         console.error('Error creating mapdata:', error);
         res.status(500).json({ message: 'Internal Server Error' });
