@@ -4,13 +4,12 @@ const { dbConnection } = require('./server');
 const cors = require('cors');
 const { storeData, getAllData, mostVisitedPage, mostClickedAction} = require('./controllers/dataController');
 const { getUserData } = require('./controllers/userController');
-//const { config } = require('./controllers/configController');
 const { updateData, user, getUsersData } = require('./controllers/updateController');
 const { screenCount, mostViewedPage } = require('./controllers/mostViewed');
 const { mostClickedActions } = require('./controllers/mostClicked');
 const { mapData, getAllMapData } = require('./controllers/mapDataController');
 const { saveDeviceData, getAllUserDeviceData } = require('./controllers/deviceDataController');
-const { clientData, getUsersByClientName } = require('./controllers/dashboardController');
+const { clientData, getUsersByClientName, MostViewedBrowsers } = require('./controllers/dashboardController');
 const { getUserEvents, dateFilter, getweeklyData, getmonthlyData } = require('./controllers/dateController');
 
 const app = express();
@@ -42,6 +41,7 @@ app.get('/getUsersData', getUsersData)
 app.get('/screenCount', screenCount)
 app.get('/mostViewedPages/:clientName', mostViewedPage)
 app.get('/mostClickedActions/:clientName', mostClickedActions)
+app.get('/mostUsedBrowsers/:clientName', MostViewedBrowsers)
 
 //new development
 app.post('/saveMapData',mapData)
