@@ -40,70 +40,56 @@ async function processAndStoreData(dataArray) {
 
 const mostViewedPage = async (req, res) => {
   try {
-    const client = req.params.clientName
+    const client = req.params.clientName;
     const users = await User.find({ 'userInfo.clientName': client });
-    if(users.length === 0){
+    if (users.length === 0) {
       return res.json({ message: `No data found for the client name: ${client}.` });
-  }
-    //console.log('users---.',users)
-    // Check if there is an existing document in the "mostviewedpage" collection
-    //const existingMostViewedPage = await MostViewedPage.findOne();
+    }
 
-    // Function to calculate the most clicked screen
     const getMostClickedScreen = (data) => {
       const screenCounts = {};
-      
-      // Iterate through the data to calculate counts for each screen
-      data.forEach(item => {
-        
-        if (item.userEvents) {
-          
-          item.userEvents.forEach(event => {
-          
-            if (event.screens) {
+      let totalCount = 0;
 
-              
+      // Calculate total count and counts for each screen
+      data.forEach(item => {
+        if (item.userEvents) {
+          item.userEvents.forEach(event => {
+            if (event.screens) {
               Object.entries(event.screens).forEach(([screen, counts]) => {
-                
                 if (!screenCounts[screen]) {
-                  
-                 
                   screenCounts[screen] = 0;
                 }
                 Object.values(counts).forEach(count => {
-                  
-                  
                   screenCounts[screen] += count;
+                  totalCount += count;
                 });
               });
             }
           });
         }
       });
-      //console.log('result',screenCounts)
-      // Sort the screens based on counts in descending order
-      const sortedScreens = Object.keys(screenCounts).sort((a, b) => screenCounts[b] - screenCounts[a]);
 
-      return {
-        mostViewedPages: sortedScreens.map(screen => ({ pageName: screen, count: screenCounts[screen] })),
-      };
+      // Calculate percentages for each screen
+      const mostViewedPages = Object.keys(screenCounts).map(screen => ({
+        pageName: screen,
+        percentage: ((screenCounts[screen] / totalCount) * 100).toFixed(2)
+
+        //percentage: Math.round((screenCounts[screen] / totalCount) * 100) -- Calculate percentage and round to the nearest integer
+        // percentage: ((screenCounts[screen] / totalCount) * 100).toFixed(2) --- Calculate percentage and round to 2 decimal places
+      }));
+
+      // Sort the screens based on counts in descending order
+      mostViewedPages.sort((a, b) => b.percentage - a.percentage);
+
+      return { mostViewedPages };
     };
 
-    // Call the function to get the most clicked screen
     const result = getMostClickedScreen(users);
-
-    // If there is an existing document, update it; otherwise, create a new one
-    
-      // const mostViewedPage = new MostViewedPage(result);
-      // await mostViewedPage.save();
-    
-
     res.json(result.mostViewedPages);
   } catch (error) {
     console.error('Error processing most viewed page data:', error);
     res.status(500).json({ message: 'Internal Server Error' });
   }
 };
-
 
 module.exports = {screenCount, mostViewedPage}

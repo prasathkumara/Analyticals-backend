@@ -28,6 +28,28 @@ const getAllMapData = async(req,res) =>{
     }
 }
 
+const usersByCountry = async (req, res) => {
+    try {
+      const client = req.params.clientName;
+  
+      const result = await MapData.aggregate([
+        { $match: { 'clientName': client } }, // Filter documents by clientName
+        { $group: { _id: { country: '$country', city: '$cityName' }, users: { $sum: 1 } } }, // Group by country and city, count users
+        { $group: { _id: '$_id.country', cities: { $push: { cityName: '$_id.city', users: '$users' } }, totalUsers: { $sum: '$users' } } }, // Group by country, create array of cities and count total users
+        { $project: { _id: 0, country: '$_id', cities: 1, totalUsers: 1 } }, // Reshape the output
+        { $sort: { country: 1 } } // Sort by country in ascending order
+      ]);
+  
+      res.json(result);
+    } catch (error) {
+      console.error('Error processing user per city data:', error);
+      res.status(500).json({ message: 'Internal Server Error' });
+    }
+  };
+  
+  
+  
 
 
-module.exports = {mapData, getAllMapData};
+
+module.exports = {mapData, getAllMapData, usersByCountry};
