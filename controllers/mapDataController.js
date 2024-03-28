@@ -33,11 +33,9 @@ const usersByCountry = async (req, res) => {
       const client = req.params.clientName;
   
       const result = await MapData.aggregate([
-        { $match: { 'clientName': client } }, // Filter documents by clientName
-        { $group: { _id: { country: '$country', city: '$cityName' }, users: { $sum: 1 } } }, // Group by country and city, count users
-        { $group: { _id: '$_id.country', cities: { $push: { cityName: '$_id.city', users: '$users' } }, totalUsers: { $sum: '$users' } } }, // Group by country, create array of cities and count total users
-        { $project: { _id: 0, country: '$_id', cities: 1, totalUsers: 1 } }, // Reshape the output
-        { $sort: { country: 1 } } // Sort by country in ascending order
+        { $match: { 'clientName': client } },
+        { $group: { _id: { country: '$country', city: '$cityName' }, users: { $sum: 1 } } },
+        { $project: { _id: 0, cityName: '$_id.city', users: 1, country: '$_id.country' } }
       ]);
   
       res.json(result);
