@@ -45,9 +45,43 @@ const usersByCountry = async (req, res) => {
     }
   };
   
+  const accesedCountryCount = async (req, res) => {
+    try {
+      const client = req.params.clientName;
+      const allUserMapData = await MapData.find({ clientName: client });
+      if (allUserMapData.length === 0) {
+        return res.json({
+          message: `No data found for the client name: ${client}.`,
+        });
+      } 
+        const countryCounts = {};
   
+        allUserMapData.forEach((item) => {
+          if (countryCounts[item.country]) {
+            countryCounts[item.country]++;
+          } else {
+            countryCounts[item.country] = 1;
+          }
+        });
+  
+        const sortedCountries = Object.keys(countryCounts).sort(
+          (a, b) => countryCounts[b] - countryCounts[a]
+        );
+  
+        const topThree = sortedCountries.slice(0, 3).map((country, index) => ({
+          label: country,
+          id: `file${index + 1}`,
+          value: countryCounts[country],
+        }));
+        return res.status(200).json(topThree);
+  
+    } catch (error) {
+      console.error("Error processing user per city data:", error);
+      res.status(500).json({ message: "Internal Server Error" });
+    }
+  };
   
 
 
 
-module.exports = {mapData, getAllMapData, usersByCountry};
+module.exports = {mapData, getAllMapData, usersByCountry, accesedCountryCount};

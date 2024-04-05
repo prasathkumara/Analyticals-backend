@@ -7,7 +7,7 @@ const { getUserData } = require('./controllers/userController');
 const { updateData, user, getUsersData } = require('./controllers/updateController');
 const { screenCount, mostViewedPage } = require('./controllers/mostViewed');
 const { mostClickedActions } = require('./controllers/mostClicked');
-const { mapData, getAllMapData, usersByCountry } = require('./controllers/mapDataController');
+const { mapData, getAllMapData, usersByCountry, accesedCountryCount } = require('./controllers/mapDataController');
 const { saveDeviceData, getAllUserDeviceData, mostUsedDevices,  } = require('./controllers/deviceDataController');
 const { clientData, getUsersByClientName, MostViewedBrowsers } = require('./controllers/dashboardController');
 const { getUserEvents, dateFilter, getweeklyData, getmonthlyData } = require('./controllers/dateController');
@@ -43,6 +43,7 @@ app.get('/mostClickedActions/:clientName', mostClickedActions)
 app.get('/mostUsedBrowsers/:clientName', MostViewedBrowsers)
 app.get('/mostUsedDevices/:clientName', mostUsedDevices)
 app.get('/usersByCountry/:clientName', usersByCountry)
+app.get('/accesedCountCountry/:clientName',accesedCountryCount)
 
 //new development
 app.post('/saveMapData',mapData)
