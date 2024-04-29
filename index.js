@@ -11,6 +11,9 @@ const { mapData, getAllMapData, usersByCountry, accesedCountryCount } = require(
 const { saveDeviceData, getAllUserDeviceData, mostUsedDevices,  } = require('./controllers/deviceDataController');
 const { clientData, getUsersByClientName, MostViewedBrowsers } = require('./controllers/dashboardController');
 const { getUserEvents, dateFilter, getweeklyData, getmonthlyData } = require('./controllers/dateController');
+const { createQuestions, getQuestions } = require('./controllers/botControllers/bot_questionsController');
+const { createOffers, getOffers } = require('./controllers/botControllers/bot_offersContoller');
+const { createAnimations, getAnimations } = require('./controllers/botControllers/bot_animationsController');
 
 const app = express();
 const port = 3000;
@@ -60,6 +63,15 @@ app.get('/getDates/:userId', dateFilter)
 app.get('/getUserEvents/:userId/:date', getUserEvents)
 app.get('/getWeeklyData/:userId', getweeklyData)
 app.get('/getMonthlyData/:userId', getmonthlyData)
+
+//Chat-Bot
+app.post('/chatBot/questions/:clientName', createQuestions);
+app.post('/chatBot/offers/:clientName',createOffers);
+app.post('/chatBot/animations/:clientName',createAnimations);
+
+app.get('/chatBot/getOffers/:clientName', getOffers);
+app.get('/chatBot/getQuestions/:clientName', getQuestions);
+app.get('/chatBot/getAnimations/:clientName', getAnimations);
 
 //Starting the server
 app.listen(port, () => {
