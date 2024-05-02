@@ -12,7 +12,7 @@ const { saveDeviceData, getAllUserDeviceData, mostUsedDevices,  } = require('./c
 const { clientData, getUsersByClientName, MostViewedBrowsers } = require('./controllers/dashboardController');
 const { getUserEvents, dateFilter, getweeklyData, getmonthlyData } = require('./controllers/dateController');
 const { createQuestions, getQuestions } = require('./controllers/botControllers/bot_questionsController');
-const { createOffers, getOffers } = require('./controllers/botControllers/bot_offersContoller');
+const { createOffers, getOffers, clienBotData } = require('./controllers/botControllers/bot_offersContoller');
 const { createAnimations, getAnimations } = require('./controllers/botControllers/bot_animationsController');
 
 const app = express();
@@ -72,6 +72,7 @@ app.post('/chatBot/animations/:clientName',createAnimations);
 app.get('/chatBot/getOffers/:clientName', getOffers);
 app.get('/chatBot/getQuestions/:clientName', getQuestions);
 app.get('/chatBot/getAnimations/:clientName', getAnimations);
+app.get('/chatBot/getClientData/:clientName',clienBotData);
 
 //Starting the server
 app.listen(port, () => {

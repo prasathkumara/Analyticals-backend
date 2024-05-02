@@ -1,4 +1,6 @@
+const Animations = require("../../models/botModels/bot_animationsModel");
 const Offers = require("../../models/botModels/bot_offersModel");
+const Questions = require("../../models/botModels/bot_questionsModel");
 
 const createOffers = async (req, res) => {
   const { clientName } = req.params;
@@ -48,7 +50,49 @@ const getOffers = async (req, res) => {
   }
 };
 
+const clienBotData = async(req, res) =>{
+  const { clientName } = req.params;
+
+  try {
+      const questionsData = await Questions.aggregate([
+          { $match: { clientName: clientName } },
+          { $unwind: "$questions" },
+          { $project: { _id: "$questions._id", question: "$questions.question" } }
+      ]);
+  
+      const offersData = await Offers.aggregate([
+          { $match: { clientName: clientName } },
+          { $unwind: "$offers" },
+          { $project: { _id: "$offers._id", offer: "$offers.offer" } }
+      ]);
+  
+      const animationData = await Animations.aggregate([
+          { $match: { clientName: clientName } },
+          { $unwind: "$animations" },
+          { $project: { _id: "$animations._id", animation: "$animations.animation" } }
+      ]);
+
+   if (!questionsData.length && !offersData.length && !animationData.length) {
+    return res.status(404).json({ error: 'No data found for the provided client name' });
+}
+
+      const responseData = {
+          questions: questionsData,
+          offers: offersData,
+          animations: animationData 
+      };
+  
+      res.json(responseData);
+  } catch (error) {
+      console.error('Error fetching data:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+  }
+  
+
+}
+
 module.exports = {
   createOffers,
-  getOffers,
+  getOffers, 
+  clienBotData
 };
