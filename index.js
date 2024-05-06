@@ -14,6 +14,7 @@ const { getUserEvents, dateFilter, getweeklyData, getmonthlyData } = require('./
 const { createQuestions, getQuestions } = require('./controllers/botControllers/bot_questionsController');
 const { createOffers, getOffers, clienBotData } = require('./controllers/botControllers/bot_offersContoller');
 const { createAnimations, getAnimations } = require('./controllers/botControllers/bot_animationsController');
+const { checkedData, getCheckedData } = require('./controllers/botControllers/bot_checkedDataController');
 
 const app = express();
 const port = 3000;
@@ -68,11 +69,13 @@ app.get('/getMonthlyData/:userId', getmonthlyData)
 app.post('/chatBot/questions/:clientName', createQuestions);
 app.post('/chatBot/offers/:clientName',createOffers);
 app.post('/chatBot/animations/:clientName',createAnimations);
+app.post('/chatBot/submitData/:clientName', checkedData)
 
 app.get('/chatBot/getOffers/:clientName', getOffers);
 app.get('/chatBot/getQuestions/:clientName', getQuestions);
 app.get('/chatBot/getAnimations/:clientName', getAnimations);
 app.get('/chatBot/getClientData/:clientName',clienBotData);
+app.post('/chatBot/getBotData',getCheckedData);
 
 //Starting the server
 app.listen(port, () => {
