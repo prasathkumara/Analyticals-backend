@@ -1,24 +1,22 @@
 const ClientData = require("../../models/botModels/bot_checkedModel");
 
-const checkedData = async(req, res) =>{
+const checkedData = async (req, res) => {
     try {
-        const {clientName} = req.params;
+        const { clientName } = req.params;
         const { questions, offers, animations } = req.body;
 
-        const clientData = await ClientData.findOne({ clientName });
+        let clientData = await ClientData.findOne({ clientName });
         if (!clientData) {
-            clientData  = new ClientData({
+            clientData = new ClientData({
                 clientName,
                 questions,
                 offers,
                 animations
             });
-       
-        } 
-        else {
-            if (questions) clientData.questions = [...clientData.questions, ...questions];
-            if (offers) clientData.offers = [...clientData.offers, ...offers];
-            if (animations) clientData.animations = [...clientData.animations, ...animations];
+        } else {
+            if (questions) clientData.questions.push(...questions);
+            if (offers) clientData.offers.push(...offers);
+            if (animations) clientData.animations.push(...animations);
         }
         await clientData.save();
         return res.status(200).json(clientData);
