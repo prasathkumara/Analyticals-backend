@@ -33,7 +33,7 @@ const createQuestions = async (req, res) => {
 const getQuestions = async (req, res) => {
   const { clientName } = req.params;
   try {
-    const client = await Questions.findOne({ clientName });
+    const client = await Questions.findOne({ clientName }).select("questions.question -_id")
 
     if (!client) {
       return res.status(404).json({ message: "Client not found" });

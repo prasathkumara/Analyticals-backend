@@ -12,7 +12,7 @@ const createOffers = async (req, res) => {
     let client = await Offers.findOne({ clientName });
 
     if (!client) {
-      client = new Offers({ clientName });
+      client = new Offers({ clientName, offers: [] });
     }
 
     if (!Array.isArray(offers)) {
@@ -22,8 +22,8 @@ const createOffers = async (req, res) => {
     }
 
     offers.forEach((offerData) => {
-      const { offer } = offerData;
-      client.offers.push({ offer });
+      const { offer, link } = offerData;
+      client.offers.push({ offer, link });
     });
 
     await client.save();
@@ -37,14 +37,14 @@ const createOffers = async (req, res) => {
 const getOffers = async (req, res) => {
   const { clientName } = req.params;
   try {
-    const client = await Offers.findOne({ clientName });
+    const client = await Offers.findOne({ clientName }).select('offers.offer offers.link -_id');
 
     if (!client) {
       return res.status(404).json({ message: "Client not found" });
     }
 
     res.status(200).json(client.offers);
-  } catch (error) {
+  } catch (error) { 
     console.error(`Error retrieving offers for ${clientName}:`, error);
     res.status(500).json({ message: "Internal Server Error" });
   }

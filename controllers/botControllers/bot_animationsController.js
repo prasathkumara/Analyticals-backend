@@ -33,7 +33,7 @@ const createAnimations = async (req, res) => {
 const getAnimations = async (req, res) => {
   const { clientName } = req.params;
   try {
-    let client = await Animations.findOne({ clientName });
+    let client = await Animations.findOne({ clientName }).select("animations.animation -_id")
 
     if (!client) {
       return res.status(404).json({ message: "Client not found" });
