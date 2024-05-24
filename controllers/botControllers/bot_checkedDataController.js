@@ -1,9 +1,14 @@
 const ClientData = require("../../models/botModels/bot_checkedModel");
 
 const checkedData = async (req, res) => {
+    const { clientName } = req.params;
     try {
-        const { clientName } = req.params;
+        
         const { questions, offers, animations } = req.body;
+          
+        if (offers && offers.some(offer => !offer.link)) {
+            return res.status(400).json({ message: 'Each offer must have a link' });
+        }
 
         let clientData = await ClientData.findOne({ clientName });
         if (!clientData) {
@@ -14,11 +19,11 @@ const checkedData = async (req, res) => {
                 animations
             });
         } else {
-            if (questions) clientData.questions.push(...questions);
+            if (questions) clientData.questions = questions;
             if (offers) clientData.offers.push(...offers);
-            if (animations) clientData.animations.push(...animations);
+            if (animations) clientData.animations = animations;
         }
-        await clientData.save();
+        await clientData.save(); 
         return res.status(200).json({ message: 'Data Submitted successfully' });
     } catch (error) {
         console.error(`Error storing data for ${clientName}:`, error);

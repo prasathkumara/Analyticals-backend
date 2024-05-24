@@ -9,7 +9,8 @@ const clientDataSchema = new mongoose.Schema({
     ],
     offers: [
         {
-            offer: { type: String, required: true }
+            offer: { type: String, required: true },
+            link: { type: String, required: true }
         }
     ],
     animations: [
