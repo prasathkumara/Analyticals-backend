@@ -6,9 +6,9 @@ const checkedData = async (req, res) => {
         
         const { questions, offers, animations } = req.body;
           
-        if (offers && offers.some(offer => !offer.link)) {
-            return res.status(400).json({ message: 'Each offer must have a link' });
-        }
+        // if (offers && offers.some(offer => !offer.link)) {
+        //     return res.status(400).json({ message: 'Each offer must have a link' });
+        // }
 
         let clientData = await ClientData.findOne({ clientName });
         if (!clientData) {

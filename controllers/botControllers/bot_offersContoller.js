@@ -6,8 +6,6 @@ const createOffers = async (req, res) => {
   const { clientName } = req.params;
   const offers = req.body;
 
-  console.log("Request Body:", req.body); // Log the request body
-
   try {
     let client = await Offers.findOne({ clientName });
 
