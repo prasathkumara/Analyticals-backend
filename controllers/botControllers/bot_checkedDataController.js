@@ -36,34 +36,46 @@ const getCheckedData = async (req, res) => {
         }
         const questions = [];
         const offers = [];
+
         inputs.forEach(input => {
-            const lowerInput = input.toLowerCase();
-            if (lowerInput.includes('hi') || lowerInput.includes('hello')) {
-                if (clientData.questions && clientData.questions.length > 0) {
-                    questions.push(...clientData.questions.map(q => ({ question: q.question })));
+            const words = input.toLowerCase().split(/\s+/);
+            let hasGreeting = false;
+            let hasOffer = false;
+
+            words.forEach(word => {
+                if (word === 'hi' || word === 'hello') {
+                    hasGreeting = true;
                 }
-            } else if (lowerInput.includes('offer')) {
-                if (clientData.offers && clientData.offers.length > 0) {
-                    offers.push(...clientData.offers.map(o => ({ offer: o.offer })));
+                if (word === 'offer' || word.includes('offer')) {
+                    hasOffer = true;
                 }
+            });
+
+            if (hasOffer && clientData.offers && clientData.offers.length > 0) {
+                offers.push(...clientData.offers.map(o => ({ offer: o.offer })));
+            } else if (hasGreeting && clientData.questions && clientData.questions.length > 0) {
+                questions.push(...clientData.questions.map(q => ({ question: q.question })));
             }
         });
 
         if (questions.length === 0 && offers.length === 0) {
-            return res.status(200).json({ message: "clients has no data" });
+            return res.status(200).json({ message: "Client has no data" });
         }
+
         const responseData = {};
-        if (questions.length > 0) {
-            responseData.questions = questions;
-        }
         if (offers.length > 0) {
             responseData.offers = offers;
+        } else if (questions.length > 0) {
+            responseData.questions = questions;
         }
+
         return res.status(200).json(responseData);
     } catch (error) {
         console.error(`Error retrieving client data for ${clientName}:`, error);
         return res.status(500).json({ message: 'Internal Server Error' });
     }
 };
+
+
 
 module.exports = {checkedData, getCheckedData}
