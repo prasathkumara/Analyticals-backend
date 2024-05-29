@@ -57,11 +57,11 @@ const getCheckedData = async (req, res) => {
             });
 
             if (hasOffer && clientData.offers && clientData.offers.length > 0) {
-                offers.push(...clientData.offers.map(o => ({ offer: o.offer })));
+                offers.push(...clientData.offers.map(o => ({ offer: o.offer, link : o.link })));
             } else if (hasGreeting && clientData.questions && clientData.questions.length > 0) {
                 questions.push(...clientData.questions.map(q => ({ question: q.question })));
             }
-        });
+        }); 
 
         if (questions.length === 0 && offers.length === 0) {
             return res.status(200).json({ message: "Client has no data" });
