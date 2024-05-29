@@ -93,7 +93,7 @@ wsServer.on('connection', (ws) => {
       // Parse the received message
       let parsedMessage;
       try {
-          parsedMessage = message.toString('utf8')
+          parsedMessage = JSON.parse(message);
       } catch (error) {
           ws.send(JSON.stringify({ message: 'Invalid JSON format' }));
           return;
