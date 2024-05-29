@@ -17,6 +17,7 @@ const { createAnimations, getAnimations } = require('./controllers/botController
 const { checkedData, getCheckedData } = require('./controllers/botControllers/bot_checkedDataController');
 const WebSocket = require('ws');
 const http = require('http');
+const ClientData = require('./models/botModels/bot_checkedModel');
 const app = express();
 const port = 3000;
 
@@ -83,20 +84,76 @@ app.post('/chatBot/getBotData',getCheckedData);
 
 const server = http.createServer(app);
 
-const wss = new WebSocket.Server({ server });
+const wsServer = new WebSocket.Server({ server });
  
-wss.on('connection', (ws) => {
-  console.log('New client connected');
- 
-  ws.on('message', (message) => {
-    console.log('Received:', message);
- 
-    // Echo the received message back to the client
-    ws.send(`Server received: ${message}`);
-  });
- 
-  ws.on('close', () => {
-    console.log('Client disconnected');
+wsServer.on('connection', (ws) => {
+  ws.on('message', async (message) => {
+      console.log('Received:', message);
+
+      // Parse the received message
+      let parsedMessage;
+      try {
+          parsedMessage = JSON.parse(message);
+      } catch (error) {
+          ws.send(JSON.stringify({ message: 'Invalid JSON format' }));
+          return;
+      }
+
+      const { inputs, clientName } = parsedMessage;
+
+      if (!inputs || !clientName) {
+          ws.send(JSON.stringify({ message: 'Missing inputs or clientName' }));
+          return;
+      }
+
+      try {
+          const clientData = await ClientData.findOne({ clientName }, { _id: false });
+          if (!clientData) {
+              ws.send(JSON.stringify({ message: `Client data not found for ${clientName}` }));
+              return;
+          }
+
+          const questions = [];
+          const offers = [];
+
+          inputs.forEach(input => {
+              const words = input.toLowerCase().split(/\s+/);
+              let hasGreeting = false;
+              let hasOffer = false;
+
+              words.forEach(word => {
+                  if (word === 'hi' || word === 'hello') {
+                      hasGreeting = true;
+                  }
+                  if (word === 'offer' || word.includes('offer')) {
+                      hasOffer = true;
+                  }
+              });
+
+              if (hasOffer && clientData.offers && clientData.offers.length > 0) {
+                  offers.push(...clientData.offers.map(o => ({ offer: o.offer })));
+              } else if (hasGreeting && clientData.questions && clientData.questions.length > 0) {
+                  questions.push(...clientData.questions.map(q => ({ question: q.question })));
+              }
+          });
+
+          if (questions.length === 0 && offers.length === 0) {
+              ws.send(JSON.stringify({ message: "Client has no data" }));
+              return;
+          }
+
+          const responseData = {};
+          if (offers.length > 0) {
+              responseData.offers = offers;
+          } else if (questions.length > 0) {
+              responseData.questions = questions;
+          }
+
+          ws.send(JSON.stringify(responseData));
+      } catch (error) {
+          console.error(`Error retrieving client data for ${clientName}:`, error);
+          ws.send(JSON.stringify({ message: 'Internal Server Error' }));
+      }
   });
 });
  
