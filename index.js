@@ -16,8 +16,7 @@ const { createOffers, getOffers, clienBotData } = require('./controllers/botCont
 const { createAnimations, getAnimations } = require('./controllers/botControllers/bot_animationsController');
 const { checkedData, getCheckedData } = require('./controllers/botControllers/bot_checkedDataController');
 const WebSocket = require('ws');
- 
-const wss = new WebSocket.Server({ port: 8080 });
+const http = require('http');
 const app = express();
 const port = 3000;
 
@@ -80,11 +79,11 @@ app.get('/chatBot/getClientData/:clientName',clienBotData);
 app.post('/chatBot/getBotData',getCheckedData);
 
 //Starting the server
-app.listen(port, () => {
-  console.log(`Server is running on localhost:${port}`);
-});
 
 
+const server = http.createServer(app);
+
+const wss = new WebSocket.Server({ server });
  
 wss.on('connection', (ws) => {
   console.log('New client connected');
@@ -101,4 +100,12 @@ wss.on('connection', (ws) => {
   });
 });
  
-console.log('WebSocket server is running on ws://localhost:8080');
+//Starting the server
+server.listen(port, () => {
+  console.log(
+    `Server is listening on
+http://localhost:
+${port}
+`
+  );
+});
