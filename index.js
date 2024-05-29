@@ -159,10 +159,5 @@ wsServer.on('connection', (ws) => {
  
 //Starting the server
 server.listen(port, () => {
-  console.log(
-    `Server is listening on
-http://localhost:
-${port}
-`
-  );
+  console.log(`Server is listening on http://localhost:${port}`);
 });
