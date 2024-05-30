@@ -122,7 +122,7 @@ wsServer.on('connection', (ws) => {
               let hasOffer = false;
 
               words.forEach(word => {
-                  if (word === 'hi' || word === 'hello') {
+                  if (word === 'hi' || word === 'hello' || word === 'hey') {
                       hasGreeting = true;
                   }
                   if (word === 'offer' || word.includes('offer')) {
@@ -131,7 +131,7 @@ wsServer.on('connection', (ws) => {
               });
 
               if (hasOffer && clientData.offers && clientData.offers.length > 0) {
-                  offers.push(...clientData.offers.map(o => ({ offer: o.offer })));
+                  offers.push(...clientData.offers.map(o => ({ offer: o.offer, link : o.link })));
               } else if (hasGreeting && clientData.questions && clientData.questions.length > 0) {
                   questions.push(...clientData.questions.map(q => ({ question: q.question })));
               }
