@@ -55,19 +55,19 @@ const clienBotData = async(req, res) =>{
       const questionsData = await Questions.aggregate([
           { $match: { clientName: clientName } },
           { $unwind: "$questions" },
-          { $project: { _id: "$questions._id", question: "$questions.question" } }
+          { $project: { _id: 0, question: "$questions.question" } }
       ]);
   
       const offersData = await Offers.aggregate([
           { $match: { clientName: clientName } },
           { $unwind: "$offers" },
-          { $project: { _id: "$offers._id", offer: "$offers.offer" } }
+          { $project: { _id: 0, offer: "$offers.offer", link:"$offers.link" } }
       ]);
   
       const animationData = await Animations.aggregate([
           { $match: { clientName: clientName } },
           { $unwind: "$animations" },
-          { $project: { _id: "$animations._id", animation: "$animations.animation" } }
+          { $project: { _id: 0, animation: "$animations.animation" } }
       ]);
 
    if (!questionsData.length && !offersData.length && !animationData.length) {

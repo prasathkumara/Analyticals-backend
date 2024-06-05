@@ -76,7 +76,7 @@ app.post('/chatBot/submitData/:clientName', checkedData)
 app.get('/chatBot/getOffers/:clientName', getOffers);
 app.get('/chatBot/getQuestions/:clientName', getQuestions);
 app.get('/chatBot/getAnimations/:clientName', getAnimations);
-app.get('/chatBot/getClientData/:clientName',clienBotData);
+app.get('/chatBot/getsubmittedData/:clientName',clienBotData);
 app.post('/chatBot/getBotData',getCheckedData);
 
 //Starting the server
