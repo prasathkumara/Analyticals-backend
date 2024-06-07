@@ -76,7 +76,7 @@ app.post('/chatBot/submitData/:clientName', checkedData)
 app.get('/chatBot/getOffers/:clientName', getOffers);
 app.get('/chatBot/getQuestions/:clientName', getQuestions);
 app.get('/chatBot/getAnimations/:clientName', getAnimations);
-app.get('/chatBot/getAllClientData/:clientName',clienBotData);
+app.get('/chatBot/getClientData/:clientName',clienBotData);
 app.get('/chatBot/getSubmittedAnimation/:clientName',submitAnimationData);
 app.get('/chatBot/getSubmittedData/:clientName',getSubmittedClientData);
 app.post('/chatBot/getBotData',getCheckedData);
