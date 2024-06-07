@@ -13,8 +13,8 @@ const { clientData, getUsersByClientName, MostViewedBrowsers } = require('./cont
 const { getUserEvents, dateFilter, getweeklyData, getmonthlyData } = require('./controllers/dateController');
 const { createQuestions, getQuestions } = require('./controllers/botControllers/bot_questionsController');
 const { createOffers, getOffers, clienBotData } = require('./controllers/botControllers/bot_offersContoller');
-const { createAnimations, getAnimations } = require('./controllers/botControllers/bot_animationsController');
-const { checkedData, getCheckedData } = require('./controllers/botControllers/bot_checkedDataController');
+const { createAnimations, getAnimations, submitAnimationData } = require('./controllers/botControllers/bot_animationsController');
+const { checkedData, getCheckedData, getSubmittedClientData } = require('./controllers/botControllers/bot_checkedDataController');
 const WebSocket = require('ws');
 const http = require('http');
 const ClientData = require('./models/botModels/bot_checkedModel');
@@ -76,7 +76,9 @@ app.post('/chatBot/submitData/:clientName', checkedData)
 app.get('/chatBot/getOffers/:clientName', getOffers);
 app.get('/chatBot/getQuestions/:clientName', getQuestions);
 app.get('/chatBot/getAnimations/:clientName', getAnimations);
-app.get('/chatBot/getsubmittedData/:clientName',clienBotData);
+app.get('/chatBot/getAllClientData/:clientName',clienBotData);
+app.get('/chatBot/getSubmittedAnimation/:clientName',submitAnimationData);
+app.get('/chatBot/getSubmittedData/:clientName',getSubmittedClientData);
 app.post('/chatBot/getBotData',getCheckedData);
 
 //Starting the server

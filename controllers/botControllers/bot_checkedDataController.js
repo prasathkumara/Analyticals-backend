@@ -81,6 +81,53 @@ const getCheckedData = async (req, res) => {
     }
 };
 
+const getSubmittedClientData = async (req, res) => {
+    const { clientName } = req.params;
+
+    try {
+    const clientData = await ClientData.aggregate([
+        { $match: { clientName } },
+        {
+          $project: {
+            _id: 0,
+            clientName: 1,
+            questions: {
+              $map: {
+                input: '$questions',
+                as: 'question',
+                in: { question: '$$question.question' }
+              }
+            },
+            offers: {
+              $map: {
+                input: '$offers',
+                as: 'offer',
+                in: { offer: '$$offer.offer', link: '$$offer.link' }
+              }
+            },
+            animations: {
+              $map: {
+                input: '$animations',
+                as: 'animation',
+                in: { animation: '$$animation.animation' }
+              }
+            }
+          }
+        }
+      ]);
+  
+      if (!clientData.length) {
+        return res.status(404).json({ error: 'No data found for the provided client name' });
+      }
+  
+      res.json(clientData[0]);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  };
+  
 
 
-module.exports = {checkedData, getCheckedData}
+
+module.exports = {checkedData, getCheckedData, getSubmittedClientData }
