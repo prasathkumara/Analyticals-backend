@@ -20,7 +20,7 @@ const checkedData = async (req, res) => {
             });
         } else {
             if (questions) clientData.questions = questions;
-            if (offers) clientData.offers.push(...offers);
+            if (offers) clientData.offers=offers;
             if (animations) clientData.animations = animations;
         }
         await clientData.save(); 
