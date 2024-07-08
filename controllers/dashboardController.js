@@ -3,8 +3,10 @@ const User = require("../models/userModel");
 const clientData = async (req, res) => {
     try {
         const users = await User.find();
-
-        const uniqueClientNames = [...new Set(users.map(user => user.userInfo.clientName))];
+        const uniqueClientNames = [...new Set(users
+            .filter(user => user.userInfo && user.userInfo.clientName)
+            .map(user => user.userInfo.clientName)
+        )];
 
         const result = uniqueClientNames.map(clientName => ({ clientName }));
 
@@ -14,6 +16,7 @@ const clientData = async (req, res) => {
         res.status(500).json({ message: 'Internal Server Error' });
     }
 }
+
 
 const getUsersByClientName = async (req, res) => {
     try {
