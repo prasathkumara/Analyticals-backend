@@ -33,7 +33,7 @@ const ClientData = require("./models/botModels/bot_checkedModel");
 const app = express();
 const port = 5000;
 
-const allowedOrigins = ["https://watdashboard.netlify.app/"];
+const allowedOrigins = ["http://localhost:4200"];
 
 //Middleware
 app.use(bodyParser.json());
