@@ -21,6 +21,10 @@ const {
   getCheckedData,
   getSubmittedClientData,
 } = require("./controllers/botControllers/bot_checkedDataController");
+const { storeData } = require('./controllers/dataController');
+const { saveDeviceData } = require('./controllers/deviceDataController');
+const { mapData } = require('./controllers/mapDataController');
+const { user, updateData } = require('./controllers/updateController');
 const DeviceData = require("./models/deviceData");
 const User = require("./models/userModel");
 const MapData = require("./models/mapData");
@@ -53,6 +57,12 @@ app.use(
 
 //Database connection
 dbConnection();
+
+app.post('/saveDeviceData',saveDeviceData)
+app.post('/saveMapData',mapData)
+app.post('/config', user) 
+app.post('/updateUserEvents/:userId', updateData)  
+app.post('/storeData', storeData);
 
 //Chat-Bot
 app.post("/chatBot/questions/:clientName", createQuestions);
@@ -364,6 +374,7 @@ io.on("connection", (socket) => {
         socket.emit("monthlyData", filteredData);
       } else {
         socket.emit("monthlyDataError", {
+          
           error: "No user data found for current month",
         });
       }
