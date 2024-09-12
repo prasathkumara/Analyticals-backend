@@ -37,11 +37,11 @@ const ClientData = require("./models/botModels/bot_checkedModel");
 const app = express();
 const port = 5000;
 
-const allowedOrigins = ["http://localhost:4200"];
+const allowedOrigins = ["http://localhost:4200","http://localhost:51286/"];
 
 //Middleware
 app.use(bodyParser.json());
-app.use(
+/* app.use(
   cors({
     origin: (origin, callback) => {
       if (allowedOrigins.includes(origin) || !origin) {
@@ -53,7 +53,16 @@ app.use(
     methods: ["GET", "POST"],
     credentials: true,
   })
+); */
+
+app.use(
+  cors({
+    origin: "*",
+    methods: ["GET", "POST"],
+    credentials: true,
+  })
 );
+
 
 //Database connection
 dbConnection();
