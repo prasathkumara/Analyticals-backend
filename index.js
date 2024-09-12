@@ -97,7 +97,7 @@ const wsServer = new WebSocket.Server({ server });
 // Create Socket.IO server with CORS options
 const io = new Server(server, {
   cors: {
-    origin: allowedOrigins,
+    origin: "*",
     methods: ["GET", "POST"],
     credentials: true,
   },
