@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { chatbotConnection } = require("../../server");
 
 const animationSchema = new mongoose.Schema({
   clientName: { type: String, required: true, unique: true },
@@ -9,6 +10,6 @@ const animationSchema = new mongoose.Schema({
   ],
 });
 
-const Animations = mongoose.model("Animations", animationSchema);
+const Animations = chatbotConnection.model("Animations", animationSchema);
 
-module.exports = Animations;
+module.exports = Animations; 

@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { chatbotConnection } = require('../../server');
 
 const clientDataSchema = new mongoose.Schema({
     clientName: { type: String, required: true, unique: true },
@@ -20,6 +21,6 @@ const clientDataSchema = new mongoose.Schema({
     ]
 });
 
-const ClientData = mongoose.model('ClientData', clientDataSchema);
+const ClientData = chatbotConnection.model('ClientData', clientDataSchema);
 
 module.exports = ClientData;

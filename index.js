@@ -1,6 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const { dbConnection } = require("./server");
+const { connectWebDB } = require("./server");
 const cors = require("cors");
 const {
   createQuestions,
@@ -65,7 +65,7 @@ app.use(
 
 
 //Database connection
-dbConnection();
+connectWebDB()
 
 app.post('/saveDeviceData',saveDeviceData)
 app.post('/saveMapData',mapData)
